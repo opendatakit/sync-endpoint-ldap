@@ -83,19 +83,29 @@ def run_interactive_config():
         if proceed.strip().lower()[0] != "y":
             print("Re-run this script once the domain is ready!")
             exit(1)
+        
+        print("Do you wish to supply you own SSL certificate .")
+        manual_certificate = input(["y/(N)"])
 
-        os.system("sudo certbot certonly --standalone \
-          --email {} \
-          -d {} \
-          --rsa-key-size 4096 \
-          --agree-tos \
-          --cert-name bootstrap \
-          --keep-until-expiring \
-          --non-interactive".format(email, domain))
+        if manual_certificate == "" :
+            manual_certificate = "n"
+        if manual_certificate.strip().lower()[0] != "y":
+
+            os.system("sudo certbot certonly --standalone \
+            --email {} \
+            -d {} \
+            --rsa-key-size 4096 \
+            --agree-tos \
+            --cert-name bootstrap \
+            --keep-until-expiring \
+            --non-interactive".format(email, domain))
+
+           
+        elif manual_certificate.strip().lower()[0] == "y":
+            os.system("sudo systemctl restart nginx")
 
         print("Attempting to save updated https configuration")
-        write_to_env_file(env_file_location, domain, email)
-
+        write_to_env_file(env_file_location, domain, email)    
     return enforce_https
 
 
